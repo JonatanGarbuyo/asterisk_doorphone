@@ -77,7 +77,7 @@ class UsbKeyboard:
             try:
                 print("New asterisk_doorphone")
                 print("Gaining exclusive access to keyboard")
-                self.get_exclusive_access_to_keyboard(self.config.device_path)
+                self.get_exclusive_access_to_keyboard(self.config.DEVICE_PATH)
                 print("Connecting to AsteriskPBX...")
                 self.connect_to_asterisk()
             except Exception as error:
