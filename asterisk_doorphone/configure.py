@@ -27,7 +27,7 @@ def main():
 
     with open("./config.py", "w") as file:
         for key, value in config.items():
-            file.write('"{}" = "{}",\r\n'.format(key, value))
+            file.write('"{}" = "{}"\r\n'.format(key, value))
 
 
 if __name__ == "__main__":
