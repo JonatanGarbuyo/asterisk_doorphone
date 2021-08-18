@@ -1,0 +1,8 @@
+
+DEVICE_PATH = "/dev/input/by-path/pci-0000:00:1d.0-usb-0:1:1.0-event-kbd"
+SERVER_IP = '127.0.0.1'
+SERVER_PORT = 5038
+DOORPHONE_EXTENSION = "100"
+DOORPHONE_CALLER_ID = "Portero Calle"
+AMI_USERNAME = "Portero"
+AMI_PASSWORD = "6b430U6642aZ65a85581afF901a133ecH1fb"
