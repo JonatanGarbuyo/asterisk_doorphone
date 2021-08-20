@@ -14,14 +14,26 @@ class AsteriskAMI:
 
     def login(self, username: str, password: str):
         """Login with asterisk AMI """
-        response = self.send_command({
+        self.send_command({
             "Action": "Login",
             "Username": username,
             "Secret": password,
             "Events": "OFF"})
+
+        response = self.receive_response()
         if 'Response: Success' not in response:
             raise ConnectionRefusedError(response)
         print(response)
+
+    def receive_response(self):
+        response = ""
+        while not response.endswith('\r\n\r\n'):
+            buf = self.socket.recv(1024)
+            if not len(buf) > 0:
+                break
+            response += buf.decode()
+        return response
+
 
     def send_command(self, args: dict):
         """Sends the command to asterisk AMI"""
@@ -31,16 +43,11 @@ class AsteriskAMI:
         command += "\r\n"
         try:
             self.socket.send(command.encode())
-        except Exception as error:
-            raise error
-        else:
-            response = ""
-            while not response.endswith('\r\n\r\n'):
-                buf = self.socket.recv(1024)
-                if not len(buf) > 0:
-                    break
-                response += buf.decode()
-            return response
+        # except Exception as error:
+        #     raise error
+        # else:
+        #     response = self.receive_response()
+        # return response
 
     def originate(self, channel, exten=None, context=None, caller_id=None, priority="1", timeout="2000", variable=None):
         """* @param string $channel Channel name to call
@@ -67,11 +74,17 @@ class AsteriskAMI:
             "Variable": variable,
         }
         print("Calling apartment {extension}".format(extension=exten))
-        response = self.send_command(params)
+        self.send_command(params)
+        response = self.receive_response()
         return response
 
-    def extension_state(self, extension: str, context: str):
-        response = (self.send_command(dict(Action="ExtensionState", Exten=extension, Context=context)))
+    def sip_peer_status(self, extension: str):
+        self.send_command(dict(Action="SIPpeerstatus", Peer=extension))
+        response = ""
+        while True:
+            response += self.receive_response()
+            if 'Event: SIPpeerstatusComplete' in response:
+                break
         print(response)
         return response
 
