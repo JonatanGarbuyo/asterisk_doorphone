@@ -26,6 +26,7 @@ class AsteriskAMI:
         print(response)
 
     def receive_response(self):
+        """receive the response from asterisk AMI"""
         response = ""
         while not response.endswith('\r\n\r\n'):
             buf = self.socket.recv(1024)
@@ -33,7 +34,6 @@ class AsteriskAMI:
                 break
             response += buf.decode()
         return response
-
 
     def send_command(self, args: dict):
         """Sends the command to asterisk AMI"""
@@ -43,14 +43,12 @@ class AsteriskAMI:
         command += "\r\n"
         try:
             self.socket.send(command.encode())
-        # except Exception as error:
-        #     raise error
-        # else:
-        #     response = self.receive_response()
-        # return response
+        except Exception as error:
+            raise error
 
-    def originate(self, channel, exten=None, context=None, caller_id=None, priority="1", timeout="2000", variable=None):
-        """* @param string $channel Channel name to call
+    def originate(self, channel="", exten="", context="", caller_id="", priority="1", timeout="2000", variable=""):
+        """
+        * @param string $channel Channel name to call
         * @param string $exten Extension to use (requires 'Context' and 'Priority')
         * @param string $context Context to use (requires 'Exten' and 'Priority')
         * @param string $priority Priority to use (requires 'Exten' and 'Context')
@@ -83,9 +81,14 @@ class AsteriskAMI:
         response = ""
         while True:
             response += self.receive_response()
-            if 'Event: SIPpeerstatusComplete' in response:
+            if "Event: SIPpeerstatusComplete" in response:
                 break
         print(response)
+        return response
+
+    def extension_state(self, extension: str, context: str):
+        self.send_command(dict(Action="ExtensionState", Exten=extension, Context=context))
+        response = self.receive_response()
         return response
 
     def disconnect(self):

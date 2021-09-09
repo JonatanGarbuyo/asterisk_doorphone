@@ -33,19 +33,18 @@ class UsbKeyboard:
             print("The apartment for the code {code} does not exist".format(code=code))
             return None
 
-    def is_available(self, extension: str):
+    def is_available(self, extension: str, context: str):
         """Check if the asterisk_doorphone extension it's available"""
-        response = self.ami.sip_peer_status(extension)
-        return True if "PeerStatus: Reachable" in response else False
+        response = self.ami.extension_state(extension, context)
+        return True if "Status: 0" in response else False
 
     def call_apartment(self, extension: str):
         """
         If the asterisk_doorphone is available places a call to the extension provided
         and connect it to the asterisk_doorphone
         """
-        if self.is_available(self.config.DOORPHONE_EXTENSION):
-            channel = "{tech}/{exten}@{context}}".format(
-                tech=self.config.DOORPHONE_TECH,
+        if self.is_available(self.config.DOORPHONE_EXTENSION, self.config.ORIGINATE_CONTEXT):
+            channel = "LOCAL/{exten}@{context}".format(
                 exten=self.config.DOORPHONE_EXTENSION,
                 context=self.config.ORIGINATE_CONTEXT
             )
@@ -81,7 +80,7 @@ class UsbKeyboard:
                 print("Connecting to AsteriskPBX...")
                 self.connect_to_asterisk()
             except Exception as error:
-                self.device.ungrab()
+                self.ami.disconnect()
                 print("Error: ", error)
                 time.sleep(3)
             else:
