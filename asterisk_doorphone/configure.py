@@ -16,7 +16,7 @@ def main():
         "SERVER_PORT": int(input("Enter the AsteriskPBX AMI port number [5038]: ") or 5038),
         "AMI_USERNAME": input("Enter the AMI Username: "),
         "AMI_PASSWORD": input("Enter the AMI Password: "),
-        "DOORPHONE_EXTENSION": input("Enter the asterisk_doorphone extension [800]: " or "800"),
+        "DOORPHONE_EXTENSION": input("Enter the asterisk_doorphone extension [800]: ") or "800",
         "DOORPHONE_CALLER_ID": input("Enter the asterisk_doorphone caller ID [Doorphone]: ") or "Doorphone",
         "ORIGINATE_CONTEXT": input("Enter the context from which the call will be made [from-internal]: ")
                                    or "from-internal",
