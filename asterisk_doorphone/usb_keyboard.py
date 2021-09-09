@@ -43,9 +43,8 @@ class UsbKeyboard:
         If the asterisk_doorphone is available places a call to the extension provided
         and connect it to the asterisk_doorphone
         """
-        if self.is_available(self.config.DOORPHONE_EXTENSION, self.config.DOORPHONE_CONTEXT):
-            channel = "{tech}/{exten}@{context}}".format(
-                tech=self.config.DOORPHONE_TECH,
+        if self.is_available(self.config.DOORPHONE_EXTENSION, self.config.ORIGINATE_CONTEXT):
+            channel = "LOCAL/{exten}@{context}".format(
                 exten=self.config.DOORPHONE_EXTENSION,
                 context=self.config.ORIGINATE_CONTEXT
             )
@@ -61,7 +60,7 @@ class UsbKeyboard:
     def connect_to_asterisk(self):
         self.ami = AsteriskAMI()
         self.ami.connect(self.config.SERVER_IP, self.config.SERVER_PORT)
-        self.ami.login(self.config.AMIUSERNAME, self.config.AMIPASSWORD)
+        self.ami.login(self.config.AMI_USERNAME, self.config.AMI_PASSWORD)
 
     def run_loop(self):
         if not self.apartments:
@@ -77,11 +76,11 @@ class UsbKeyboard:
             try:
                 print("New asterisk_doorphone")
                 print("Gaining exclusive access to keyboard")
-                self.get_exclusive_access_to_keyboard(self.config.device_path)
+                self.get_exclusive_access_to_keyboard(self.config.DEVICE_PATH)
                 print("Connecting to AsteriskPBX...")
                 self.connect_to_asterisk()
             except Exception as error:
-                self.device.ungrab()
+                self.ami.disconnect()
                 print("Error: ", error)
                 time.sleep(3)
             else:
