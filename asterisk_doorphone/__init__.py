@@ -4,4 +4,4 @@ A Python package for an Asterisk based building doorphone.
 
 """
 
-__version__ = '0.1.3'
+__version__ = '0.1.5'
